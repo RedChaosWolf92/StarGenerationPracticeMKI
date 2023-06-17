@@ -2,8 +2,8 @@ extends Node2D
 
 var star_types = []
 const MAX_ATTEMPTS = 10
-const Spiral_Dis = 1000
-const Spiral_tight = 50
+const Spiral_Dis = 500
+const Spiral_tight = 55
 
 var numArms = 2
 var blackHole = preload("res://Galaxy/Stars/BlackHole.tscn").instantiate() # gets the black hole node in Stars
@@ -24,7 +24,7 @@ func centralBlackHole():
 	add_child(blackHole)
 
 func generate_spiral(starsNum: int, Arms: int, safeDis: float) -> Vector2:
-	var angle = 0.3 * starsNum + Arms * (2 * PI / numArms) # adjust this value to change the distance between stars in the spiral
+	var angle = 0.34 * starsNum + Arms * (2 * PI / numArms) # adjust this value to change the distance between stars in the spiral
 	var rad = Spiral_Dis + Spiral_tight * angle
 	
 	#adding the safe distance tp 'rad'
@@ -63,6 +63,11 @@ func add_star(starsNum: int):
 		pos = get_viewport_rect().size / 2 + Vector2(0, safeDis)
 	else:
 		pos = get_viewport_rect().size / 2 + generate_spiral(starsNum, Arms, safeDis)
+		
+	#checking if new star would overlap with black hole
+	if starsNum == 0 and pos.distance_to(blackHole.global_position) < newStar.star_radius + safeDis:
+		var direction = (pos - blackHole.global_position).normalized()
+		pos = blackHole.global_position + direction * (newStar.star_radius + safeDis)
 		
 	newStar.global_position = pos
 
