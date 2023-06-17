@@ -1,0 +1,38 @@
+[gd_scene load_steps=10 format=3 uid="uid://ck0sgqws72b11"]
+
+[ext_resource type="Script" path="res://Galaxy/Stars/stars.gd" id="1_6td8j"]
+[ext_resource type="PackedScene" uid="uid://dc6qe0n3bhgex" path="res://Galaxy/Stars/Blue_Giant.tscn" id="2_fvqk7"]
+[ext_resource type="PackedScene" uid="uid://q3yxvr25bnlp" path="res://Galaxy/Stars/BlackHole.tscn" id="3_cbkn7"]
+[ext_resource type="PackedScene" uid="uid://cesmeek15wyp3" path="res://Galaxy/Stars/Neutron.tscn" id="4_so14e"]
+[ext_resource type="PackedScene" uid="uid://6rbgi036idnj" path="res://Galaxy/Stars/ProtoStar.tscn" id="5_k0s7o"]
+[ext_resource type="PackedScene" uid="uid://bxwvmwslxpy3o" path="res://Galaxy/Stars/Red_Dwarf.tscn" id="6_teoq2"]
+[ext_resource type="PackedScene" uid="uid://bdy4t1x81bm26" path="res://Galaxy/Stars/Red_Giant.tscn" id="7_ndyfi"]
+[ext_resource type="PackedScene" uid="uid://onec2wxdygg3" path="res://Galaxy/Stars/White_Dwarf.tscn" id="8_vys0p"]
+[ext_resource type="PackedScene" uid="uid://cp1yguno5w5wk" path="res://Galaxy/Stars/Yellow_Star.tscn" id="9_8b01y"]
+
+[node name="Stars" type="Node2D"]
+script = ExtResource("1_6td8j")
+
+[node name="Blue_Giant" parent="." instance=ExtResource("2_fvqk7")]
+position = Vector2(1155, 820)
+
+[node name="BlackHole" parent="." instance=ExtResource("3_cbkn7")]
+position = Vector2(1063, 441)
+
+[node name="Neutron" parent="." instance=ExtResource("4_so14e")]
+position = Vector2(1115, 178)
+
+[node name="ProtoStar" parent="." instance=ExtResource("5_k0s7o")]
+position = Vector2(782, 776)
+
+[node name="Red_Dwarf" parent="." instance=ExtResource("6_teoq2")]
+position = Vector2(255, 719)
+
+[node name="Red_Giant" parent="." instance=ExtResource("7_ndyfi")]
+position = Vector2(736, 410)
+
+[node name="White_Dwarf" parent="." instance=ExtResource("8_vys0p")]
+position = Vector2(265, 242)
+
+[node name="Yellow_Star" parent="." instance=ExtResource("9_8b01y")]
+position = Vector2(685, 151)

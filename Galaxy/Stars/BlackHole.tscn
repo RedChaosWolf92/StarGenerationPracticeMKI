@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://q3yxvr25bnlp"]
+
+[ext_resource type="Texture2D" uid="uid://dinde56q7rx57" path="res://Sprites/Stellar Bodies/12_01.png" id="1_jmbkc"]
+[ext_resource type="Script" path="res://Galaxy/Stars/BlackHole.gd" id="1_tvjpq"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4abfx"]
+radius = 61.0
+
+[node name="BlackHole" type="StaticBody2D"]
+script = ExtResource("1_tvjpq")
+
+[node name="BlackHole" type="Sprite2D" parent="."]
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("1_jmbkc")
+
+[node name="Border" type="Sprite2D" parent="BlackHole"]
+scale = Vector2(1.12, 1.12)
+texture = ExtResource("1_jmbkc")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-12, -6)
+shape = SubResource("CircleShape2D_4abfx")
