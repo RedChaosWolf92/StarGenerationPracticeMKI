@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://57e6446pwi58"]
+
+[ext_resource type="Script" path="res://Galaxy/galaxy1.gd" id="1_tpf8r"]
+[ext_resource type="Script" path="res://Galaxy/Practice.gd" id="2_x8ccr"]
+
+[node name="Galaxy" type="Node2D"]
+script = ExtResource("1_tpf8r")
+
+[node name="Practice" type="Camera2D" parent="."]
+script = ExtResource("2_x8ccr")
