@@ -8,6 +8,9 @@ const Spiral_tight = 55
 var numArms = 2
 var blackHole = preload("res://Galaxy/Stars/BlackHole.tscn").instantiate() # gets the black hole node in Stars
 
+var angle_increment = PI / 250 #controlls the tightness of the spiral, higher makes spiral looser and lower makes spiral tighter
+var current_angle = 0 # starting angle
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -57,17 +60,16 @@ func add_star(starsNum: int):
 	var Arms = starsNum % numArms
 	#position of stars
 	var pos
-	var attempts = 0
 	#finding the safe distance from blackhole
 	var safeDis = blackHole.star_radius
 	#if first star (starnums ==0), then generate it at least position equal to safe_distance
 	print(safeDis)
-	if starsNum == 0:
-		pos = get_viewport_rect().size / 2 + Vector2(0, safeDis)
-		print(pos, " safe distance from the blackhole")
-	else:
-		pos = get_viewport_rect().size / 2 + generate_spiral(starsNum, Arms, safeDis)
-		print(pos, "after the first star")
+	#if starsNum == 0:
+	pos = get_viewport_rect().size / 2 + polar_to_cartesian(safeDis, current_angle)
+	print(pos, " safe distance from the blackhole")
+	
+	#increases the angle for the next star
+	current_angle = angle_increment + 10
 		
 	#checking if new star would overlap with black hole
 	#if starsNum == 0 and pos.distance_to(blackHole.global_position) < newStar.star_radius + safeDis:
@@ -76,11 +78,8 @@ func add_star(starsNum: int):
 		
 	newStar.global_position = pos
 
-	attempts += 1
-	if attempts > MAX_ATTEMPTS:
-		print("Failed to find a valid position for the star after", MAX_ATTEMPTS, "attempts.")
-	
-#	while not is_position_valid(newStar,pos):
-#		newStar.global_position = pos
-	
 	add_child(newStar)
+	
+func polar_to_cartesian(r, theta):
+	#converts poar coordinates to Cartesian
+	return Vector2(r * cos(theta), r * sin(theta))
