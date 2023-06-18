@@ -5,15 +5,23 @@ var star_radius = 0.0
 var blackhole = Color.BLACK.lightened(0.1)
 var border = Color.WHITE
 
+@export var probability: float = 0.05
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	randomize()
-	generate_ProtoStar()
+	generate_BlackHole()
 	
-func generate_ProtoStar():
+func generate_BlackHole():
 	self.modulate = blackhole
+	var BlackHolesize = get_node("BlackHoleImage").scale
+	var BlackHoleRad = $BlackHoleRadius.shape.radius
+	var BlackHoleRadSize = $BlackHoleRadius.scale
 	
-	$BlackHole.scale = Vector2(star_size,star_size)
-	star_radius = star_size / 2
+	BlackHolesize = Vector2(star_size, star_size)
 	
-	self.position = Vector2(250,250)
+	BlackHoleRadSize = BlackHolesize * 4.0
+	
+	#ensuring the star_radius changes in relation to BlackHoleRad multi by BlackHoleRadSize(which is 4 times the scale of BlackholeSize)
+	star_radius = BlackHoleRadSize.length() * BlackHoleRad
+
