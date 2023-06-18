@@ -19,9 +19,12 @@ func _ready():
 			star_types.append(child)
 			
 func centralBlackHole():
-	blackHole.global_position = Vector2.ZERO # center location of the screen
+	blackHole.global_position = Vector2(get_viewport_rect().size/2) # center location of the screen
 	blackHole.scale = Vector2(0.85,0.85)
 	add_child(blackHole)
+	print(blackHole.global_position, "this is where the blackhole is ")
+	print(blackHole.scale, "this is how large the black hole is")
+	print(" ")
 
 func generate_spiral(starsNum: int, Arms: int, safeDis: float) -> Vector2:
 	var angle = 0.34 * starsNum + Arms * (2 * PI / numArms) # adjust this value to change the distance between stars in the spiral
@@ -50,7 +53,6 @@ func chooseStar():
 #	return true
 			
 func add_star(starsNum: int):
-	var star_type = star_types[randi() % star_types.size()]
 	var newStar = chooseStar().duplicate()
 	var Arms = starsNum % numArms
 	#position of stars
@@ -59,15 +61,18 @@ func add_star(starsNum: int):
 	#finding the safe distance from blackhole
 	var safeDis = blackHole.star_radius
 	#if first star (starnums ==0), then generate it at least position equal to safe_distance
+	print(safeDis)
 	if starsNum == 0:
 		pos = get_viewport_rect().size / 2 + Vector2(0, safeDis)
+		print(pos, " safe distance from the blackhole")
 	else:
 		pos = get_viewport_rect().size / 2 + generate_spiral(starsNum, Arms, safeDis)
+		print(pos, "after the first star")
 		
 	#checking if new star would overlap with black hole
-	if starsNum == 0 and pos.distance_to(blackHole.global_position) < newStar.star_radius + safeDis:
-		var direction = (pos - blackHole.global_position).normalized()
-		pos = blackHole.global_position + direction * (newStar.star_radius + safeDis)
+	#if starsNum == 0 and pos.distance_to(blackHole.global_position) < newStar.star_radius + safeDis:
+		#var direction = (pos - blackHole.global_position).normalized()
+		#pos = blackHole.global_position + direction * (newStar.star_radius + safeDis)
 		
 	newStar.global_position = pos
 
@@ -79,9 +84,3 @@ func add_star(starsNum: int):
 #		newStar.global_position = pos
 	
 	add_child(newStar)
-
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
