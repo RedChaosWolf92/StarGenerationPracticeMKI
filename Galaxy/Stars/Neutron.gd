@@ -2,6 +2,7 @@ extends StaticBody2D
 
 var star_size = randf_range(0.20,0.35)
 var star_radius = 0.0
+var safeDisfromOthers: float = 0.0
 
 @export var probability: float = 0.1
 
@@ -16,7 +17,8 @@ func generate_Neutron():
 	var NeutronRad = $NeutronRadius.shape.radius
 	var NeutronRadSize = $NeutronRadius.scale
 	
-	NeutronRad = Vector2(star_size,star_size)
-	NeutronRadSize = NeutronRad * 4
+	NeutronSize = Vector2(star_size,star_size)
+	NeutronRadSize = NeutronSize * 4
 	
 	star_radius = NeutronRadSize.length() * NeutronRad
+	safeDisfromOthers = star_radius * 2
