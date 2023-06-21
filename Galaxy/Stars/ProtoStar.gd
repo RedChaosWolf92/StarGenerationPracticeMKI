@@ -2,6 +2,7 @@ extends StaticBody2D
 
 var star_size = randf_range(0.3,.6)
 var star_radius = 0.0
+var safeDisfromOthers: float = 0.0
 
 @export var probability: float = 0.12
 
@@ -20,3 +21,4 @@ func generate_ProtoStar():
 	ProtoRadSize = ProtoSize * 2
 	
 	star_radius = ProtoRadSize.length() * ProtoRad
+	safeDisfromOthers = star_radius * .75
