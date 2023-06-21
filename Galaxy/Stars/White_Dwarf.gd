@@ -2,6 +2,7 @@ extends StaticBody2D
 
 var star_size = randf_range(0.05,0.35)
 var star_radius = 0.0
+var safeDisfromOthers: float = 0.0
 
 @export var probability: float = 0.13
 
@@ -19,3 +20,4 @@ func generate_WhiteDwarf():
 	WhitedwarfRadSize = WhitedwarfSize * 2
 	
 	star_radius = WhitedwarfRadSize.length() * WhitedwarfRad
+	safeDisfromOthers = star_radius * .1
