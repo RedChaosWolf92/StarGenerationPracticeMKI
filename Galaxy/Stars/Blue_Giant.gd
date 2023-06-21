@@ -3,6 +3,7 @@ extends StaticBody2D
 var star_color = Color.DEEP_SKY_BLUE
 var star_size = randf_range(0.75,1.50)
 var star_radius = 0.0
+var safeDisfromOthers: float = 0.0
 
 @export var probability: float = 0.13
 
@@ -21,3 +22,4 @@ func generate_BlueGiant():
 	BluegiantRadSize = BluegiantSize * 2
 	
 	star_radius = BluegiantRadSize.length() * BluegiantRad
+	safeDisfromOthers = star_radius * 1.5 
