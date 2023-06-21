@@ -2,6 +2,7 @@ extends StaticBody2D
 
 var star_size = randf_range(0.3,.6)
 var star_radius = 0.0
+var safeDisfromOthers: float = 0.0
 var blackhole = Color.BLACK.lightened(0.1)
 var border = Color.WHITE
 
@@ -22,6 +23,6 @@ func generate_BlackHole():
 	
 	BlackHoleRadSize = BlackHolesize * 4.0
 	
-	#ensuring the star_radius changes in relation to BlackHoleRad multi by BlackHoleRadSize(which is 4 times the scale of BlackholeSize)
 	star_radius = BlackHoleRadSize.length() * BlackHoleRad
+	safeDisfromOthers = star_radius * 2
 
