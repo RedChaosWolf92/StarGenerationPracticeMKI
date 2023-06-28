@@ -2,16 +2,17 @@ extends Node2D
 
 var star_types = []
 
-@export var numStars: int = 100
+@export var numStars: int = 150
 
 var offset_range = 2400
 var scaleFactor = 6
 var MaxNearbyStars = 7
 
 const MAX_ATTEMPTS = 15
-const DISPLACEMENT_STDEV = 50.0
-const REPEL_FORCE = 50.0
+const DISPLACEMENT_STDEV = 2.5
+const REPEL_FORCE = 3.5
 const MAX_REPEL_ITERATIONS = 10
+var center = Vector2(get_viewport_rect().size / 2)
 
 var rng = RandomNumberGenerator.new()
 var visible_stars = [] #list for tracking all visible stars
@@ -55,14 +56,33 @@ func generate_stars():
 		
 	var step = scaled_path.size() / numStars
 	
+	
 	#uniformed placement
 	for i in range(numStars):
 		var newstar = chooseStar().duplicate()
-		var t = pow(float(i) / numStars, 1.75)
-		var pos = scaled_path[int(t * scaled_path.size()) % scaled_path.size()]
+		var t = sqrt(float(i) / numStars)
+		var pos = scaled_path[int(i * step) % scaled_path.size()]
+		var disfromCenter = pos.distance_to(center)
+		
+		#Calculate direction of path
+		var direction = Vector2()
+		if i < numStars - 1:
+			direction = scaled_path[i + 1] - scaled_path[i]
+		else:
+			direction = scaled_path[i] - scaled_path[i - 1]
+			
+		#calculate perpendicular direction
+		var PerpDirection = Vector2(-direction.y, direction.x).normalized()
 		
 		#add random displacement
-		var displacement = Vector2(rng.randf(), rng.randf()).normalized() * rng.randfn() * DISPLACEMENT_STDEV
+		var displacement = PerpDirection * disfromCenter * rng.randfn() * DISPLACEMENT_STDEV * (1 -4 * (t - 0.5) * (t - 0.5))
+		
+		
+		#adding random angle to each star's position
+		'var angle = rng.randf() * 2 * PI
+		var distance = rng.randf() * t * DISPLACEMENT_STDEV
+		displacement += Vector2(cos(angle), sin(angle)) * distance'
+		
 		pos += displacement
 		
 		place_star(pos,newstar)
