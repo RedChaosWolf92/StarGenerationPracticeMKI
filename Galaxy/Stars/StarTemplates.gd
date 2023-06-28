@@ -2,25 +2,37 @@ extends Node2D
 
 var star_types = []
 
-@export var numStars: int = 150
+@export var NUM_STARS: int = 500
 
-var offset_range = 2400
-var scaleFactor = 6
-var MaxNearbyStars = 7
+var OFFSET_RANGE = 2400
+var LOG_BASE = 2
+var SCALE_FACTOR = .75
 
 const MAX_ATTEMPTS = 15
-const DISPLACEMENT_STDEV = 2.5
-const REPEL_FORCE = 3.5
-const MAX_REPEL_ITERATIONS = 10
-var center = Vector2(get_viewport_rect().size / 2)
+const DISPLACEMENT_STDEV = 18.1
+const REPEL_FORCE = 26.7
+const MAX_REPEL_ITERATIONS = 25
+const MAX_DISTANCE = 60000
+const MIN_DISTANCE = 45000
+
+var center = Vector2(0,0)
 
 var rng = RandomNumberGenerator.new()
+
 var visible_stars = [] #list for tracking all visible stars
 var removedStars: int = 0
 
 @onready var camera = $Practice
 
 func _ready():
+	randomize()
+	initialize_star_types()
+	# start star generation
+	generate_stars()
+	#center the camera
+	center_camera()
+	
+func initialize_star_types():
 	# get all star types and hide them
 	for child in get_children():
 		if child is StaticBody2D:
@@ -30,11 +42,9 @@ func _ready():
 	#sort star_types in descending order by their sizes
 	star_types.sort_custom(Callable(self, "compare_star_sizes"))
 	
-	# start star generation
-	generate_stars()
-	
+func center_camera():	
 	# center the camera
-	camera.global_position = get_viewport_rect().size / 2
+	camera.global_position = Vector2(0,0)
 	camera.scale = Vector2(.5,.5)
 
 func compare_star_sizes(star1, star2):
@@ -47,95 +57,45 @@ func compare_star_sizes(star1, star2):
 		
 func generate_stars():
 	rng.randomize()
-	
-	var path = $Path2D.curve.get_baked_points()
+	var path = $StarPath.curve.get_baked_points()
 	var scaled_path = []
-	
 	for point in path:
-		scaled_path.append(point * scaleFactor)
-		
-	var step = scaled_path.size() / numStars
+		scaled_path.append(point * SCALE_FACTOR)
+	var step = scaled_path.size() / NUM_STARS
 	
+	generate_star_placement(scaled_path, step)
+	apply_collision_avoidance()
 	
-	#uniformed placement
-	for i in range(numStars):
-		var newstar = chooseStar().duplicate()
-		var t = sqrt(float(i) / numStars)
-		var pos = scaled_path[int(i * step) % scaled_path.size()]
-		var disfromCenter = pos.distance_to(center)
-		
-		#Calculate direction of path
-		var direction = Vector2()
-		if i < numStars - 1:
-			direction = scaled_path[i + 1] - scaled_path[i]
-		else:
-			direction = scaled_path[i] - scaled_path[i - 1]
-			
-		#calculate perpendicular direction
-		var PerpDirection = Vector2(-direction.y, direction.x).normalized()
-		
-		#add random displacement
-		var displacement = PerpDirection * disfromCenter * rng.randfn() * DISPLACEMENT_STDEV * (1 -4 * (t - 0.5) * (t - 0.5))
-		
-		
-		#adding random angle to each star's position
-		'var angle = rng.randf() * 2 * PI
-		var distance = rng.randf() * t * DISPLACEMENT_STDEV
-		displacement += Vector2(cos(angle), sin(angle)) * distance'
-		
-		pos += displacement
-		
-		place_star(pos,newstar)
-		
-	#Collision avoidance
-	for c in range(MAX_REPEL_ITERATIONS):
-		var hasMoved = false
-		for star in visible_stars:
-			var repelForce = Vector2()
-			for otherStars in visible_stars:
-				if star == otherStars:
-					continue
-					
-				var diff = star.global_position - otherStars.global_position
-				var dist = diff.length()
-				
-				if dist < star.safeDisfromOthers + otherStars.safeDisfromOthers:
-					repelForce += diff.normalized() / dist
-			
-			if repelForce.length() > 0:
-				hasMoved = true
-				star.global_position += repelForce.normalized() * REPEL_FORCE
-				
-		if !hasMoved:
-			break
-#modify to check for overlaps only with visible stars
-'func is_position_valid(pos: Vector2, newstar) -> bool:
-	var num_nearby_stars = 0
-	for star in visible_stars:
-		var minDist = star.safeDisfromOthers + newstar.safeDisfromOthers
-		var maxDist = minDist * 4
-		var dist = star.global_position.distance_to(pos)
-		if dist < minDist:
-			num_nearby_stars += 1
-		if num_nearby_stars > MaxNearbyStars:
-			return false
-	return true'
-
-'func revalidate_stars(newstar):	
-	for star in visible_stars:
-		if star != newstar:
-			var minDist = star.safeDisfromOthers + newstar.safeDisfromOthers
-			var maxDist = minDist * 4
-			var dist = star.global_position.distance_to(newstar.global_position)
-			if dist < minDist:
-				visible_stars.erase(star)
-				star.queue_free()
-				removedStars += 1
-				print("Stars removed: ", removedStars)
-				#after finding overlapping star and removing, we can revalid
-				revalidate_stars(newstar)
-				return'
-
+func generate_star_placement(scaled_path, step):
+	for i in range(NUM_STARS):
+		var new_star = chooseStar().duplicate()
+		var pos = calculate_star_position(i, new_star, scaled_path, step)
+		place_star(pos,new_star)
+	
+func calculate_star_position(i, new_star, scaled_path, step):
+	var t = pow((float(i) / NUM_STARS) + rng.randf_range(-2.5,9.5), 3.2)	
+	var pos = scaled_path[int(i * step) % scaled_path.size()]
+	var dis_from_Center = pos.distance_to(center)
+	var direction = calculate_direction(i, scaled_path)
+	var perp_direction = direction.normalized()
+	#add random displacement
+	var displacement = perp_direction * dis_from_Center * rng.randfn() * DISPLACEMENT_STDEV * .03
+	#adding random angle to each star's position
+	var angle = rng.randf_range(0,7.5) * 2 * PI
+	#how far the displacement
+	var distance = rng.randf() * t * DISPLACEMENT_STDEV
+	displacement += Vector2(cos(angle), sin(angle)) * distance
+	pos += displacement
+	
+	if pos.length() > MAX_DISTANCE:
+		pos = pos.normalized() * rng.randf_range(MIN_DISTANCE, MAX_DISTANCE)
+	return pos
+	
+func calculate_direction(i, scaled_path):
+	if i < NUM_STARS - 1:
+		return scaled_path[i + 1] + scaled_path[i]
+	else:
+		return scaled_path[i] + scaled_path[i - 1]
 
 func place_star(pos: Vector2, newstar):
 	newstar.global_position = pos
@@ -144,6 +104,29 @@ func place_star(pos: Vector2, newstar):
 	visible_stars.append(newstar)
 	print(newstar, " and ", pos," and ", newstar.safeDisfromOthers)
 	print("Total Stars: ", visible_stars.size())
+
+func apply_collision_avoidance():
+	#Collision avoidance
+	for c in range(MAX_REPEL_ITERATIONS):
+		var has_moved = false
+		for star in visible_stars:
+			var repel_force = Vector2()
+			for other_stars in visible_stars:
+				if star == other_stars:
+					continue
+					
+				var diff = star.global_position - other_stars.global_position
+				var dist = diff.length() * 1.15
+				
+				if dist < star.safeDisfromOthers + other_stars.safeDisfromOthers:
+					repel_force += (diff.normalized() / (dist * dist + .0001)) * REPEL_FORCE
+			
+			if repel_force.length() > 0:
+				has_moved = true
+				star.global_position += repel_force.normalized() * (REPEL_FORCE)
+				
+		if !has_moved:
+			break
 
 func chooseStar():
 	var ran = randf()
