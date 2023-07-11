@@ -29,12 +29,12 @@ func create_path(star, max_paths):
 		var other_star = choose_other_star(star)
 		if other_star == null: # if there are no stars to connect
 			break
-		if len(other_star.get_node("starPaths").get_children()) < get_max_paths(other_star.star_type):
+		if len(other_star.get_node("StarPaths").get_children()) < get_max_paths(other_star.star_type):
 			add_path_between(star,other_star)
 			current_paths +=1
 			
 func choose_other_star(star):
-	var other_stars = get_tree().get_nodes_in_group("stars").duplicate()
+	var other_stars = get_tree().get_nodes_in_group("stars").duplicate(true)
 	other_stars.erase(star)
 	
 	for path in star.get_node("StarPaths").get_children():
@@ -67,7 +67,17 @@ func get_max_paths(star_type):
 		"Yellow_Star":
 			return 5
 	
+	return 0
+	
 func add_path_between(star1, star2):
+	#add a check for existing paths
+	print("attempting to add a path between ", star1.name, " + ", star2.name)
+	for path in star1.get_node("StarPaths").get_children():
+		if path.points[1] == star2.global_position:
+			print("Path already exists, returning...")
+			return 
+	
+	
 	var line = Line2D.new()
 	line.default_color = Color(randf_range(0,1),randf_range(0,1), 1)
 	line.width = 2
