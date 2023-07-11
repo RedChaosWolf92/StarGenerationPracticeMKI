@@ -1,19 +1,20 @@
 extends Node2D
 
+signal stars_ready
+
 var star_types = []
 
-@export var NUM_STARS: int = 500
+@export var NUM_STARS: int = 100
 
 var OFFSET_RANGE = 2400
-var LOG_BASE = 2
-var SCALE_FACTOR = .63
+var SCALE_FACTOR = .79
 
 const MAX_ATTEMPTS = 15
-const DISPLACEMENT_STDEV = 18.1
-const REPEL_FORCE = 22.7
+const DISPLACEMENT_STDEV = 11.2
+const REPEL_FORCE = 14.7
 const MAX_REPEL_ITERATIONS = 25
-const MAX_DISTANCE = 70000
-const MIN_DISTANCE = 40000
+const MAX_DISTANCE = 125000
+const MIN_DISTANCE = 85000
 
 var center = Vector2(0,0)
 
@@ -51,7 +52,7 @@ func compare_star_sizes(star1, star2):
 		
 func generate_stars():
 	rng.randomize()
-	var path = $StarPath.curve.get_baked_points()
+	var path = $StarPath_Arm.curve.get_baked_points()
 	var scaled_path = []
 	for point in path:
 		scaled_path.append(point * SCALE_FACTOR)
@@ -65,6 +66,7 @@ func generate_star_placement(scaled_path, step):
 		var new_star = chooseStar().duplicate()
 		var pos = calculate_star_position(i, new_star, scaled_path, step)
 		place_star(pos,new_star)
+		new_star.add_to_group("stars")# adding stars to group which will allow starPaths to call on
 	
 func calculate_star_position(i, new_star, scaled_path, step):
 	var t = pow((float(i) / NUM_STARS) + rng.randf_range(-2.5,9.5), 3.2)	
@@ -80,9 +82,11 @@ func calculate_star_position(i, new_star, scaled_path, step):
 	var distance = rng.randf() * t * DISPLACEMENT_STDEV
 	displacement += Vector2(cos(angle), sin(angle)) * distance
 	pos += displacement
+	print("First position set: ", pos)
 	
 	if pos.length() > MAX_DISTANCE:
 		pos = pos.normalized() * rng.randf_range(MIN_DISTANCE, MAX_DISTANCE)
+		print("New Position after moving: ", pos)
 	return pos
 	
 func calculate_direction(i, scaled_path):
@@ -119,6 +123,8 @@ func apply_collision_avoidance():
 				
 		if !has_moved:
 			break
+			
+	emit_signal("stars_ready")
 
 func chooseStar():
 	var ran = randf()
