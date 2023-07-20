@@ -25,29 +25,22 @@ class StarComparator:
 			return 0
 
 func generate_paths():
-	var path = get_parent().get_node("StarPath_Arm").curve.get_baked_points()
-	for i in range(path.size()):
-		var stars_in_range = get_stars_in_range(path[i])
-		for star in stars_in_range:
-			var max_paths = get_max_paths(star.star_type)
-			var nearby_stars = get_nearby_stars(star,stars_in_range)
-			for j in range(min(max_paths, nearby_stars.size())):
-				var other_star = nearby_stars[j]
-				if not path_exists_between(star, other_star):
-					add_path_between(star, other_star, scale_factor)
-					
-func get_stars_in_range(position):
-	var stars_in_range = []
-	for star in get_tree().get_nodes_in_group("stars"):
-		if star.global_position.distance_to(position) <= MAX_DISTANCE:
-			stars_in_range.append(star)
-	return stars_in_range
-	
-func get_nearby_stars(star, stars_in_range):
-	var nearby_stars = stars_in_range.duplicate(true)
-	nearby_stars.erase(star)
-	
-	var comparator = StarComparator.new(star)
+	var all_stars = get_tree().get_nodes_in_group("stars")
+	for star in all_stars:
+		var max_paths = get_max_paths(star.star_type)
+		var nearby_stars = get_nearby_stars(star, all_stars)
+		for i in range(min(max_paths,nearby_stars.size())):
+			var other_star = nearby_stars[i]
+			if not path_exists_between(star, other_star):
+				add_path_between(star, other_star, scale_factor)
+
+func get_nearby_stars(ref_star, all_stars):
+	var nearby_stars = []
+	for star in all_stars:
+		if star != ref_star and star.global_position.distance_to(ref_star.global_position) <= MAX_DISTANCE:
+			nearby_stars.append(star)
+
+	var comparator = StarComparator.new(ref_star)
 	nearby_stars.sort_custom(Callable(comparator, "compare"))
 	
 	return nearby_stars
@@ -81,6 +74,10 @@ func get_max_paths(star_type):
 	return 0
 	
 func add_path_between(star1, star2,scale_factor):
+	#check if either star has reached their maxium path count
+	if star1.get_node("StarPaths").get_child_count() >= get_max_paths(star1.star_type) or star2.get_node("StarPaths").get_child_count() >= get_max_paths(star2.star_type):
+		return
+	
 	#add a check for existing paths
 	print("attempting to add a path between ", star1.name, " + ", star2.name)
 	for path in star1.get_node("StarPaths").get_children():
@@ -92,8 +89,8 @@ func add_path_between(star1, star2,scale_factor):
 	print("Star2 Position: ", star2.global_position * scale_factor)
 	
 	var line = Line2D.new()
-	line.default_color = Color(randf_range(0,1),randf_range(0,1), 1)
-	line.width = 5
+	line.default_color = Color(randf(),randf(), 1)
+	line.width = 5.0
 	line.points = [star1.global_position * scale_factor, star2.global_position * scale_factor]
 	
 	#add the lines as a child to the StarPaths nodes of both stars
