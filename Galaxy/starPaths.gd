@@ -1,53 +1,64 @@
 extends Node2D
 
-var starPaths = {} # to store references to stars and their paths 
+var starPaths = {} # to store references to stars and their paths
+const MAX_DISTANCE = 10000
+const MAX_ATTEMPT = 15
+const scale_factor = .79
 
 class StarComparator:
 	var ref_star
+	var refposition
 	
 	func _init(_ref_star):
 		ref_star = _ref_star
+		refposition = ref_star.global_position
 		
 	func compare(star1, star2):
-		return star1.global_position.distance_to(ref_star.global_position) - star2.global_position.distance_to(ref_star.global_position)
+		var dist1 = star1.global_position.distance_to(refposition)
+		var dist2 = star2.global_position.distance_to(refposition)
+		
+		if dist1 < dist2:
+			return -1
+		elif dist1 > dist2:
+			return 1
+		else:
+			return 0
 
 func generate_paths():
-	for star in get_tree().get_nodes_in_group("stars"):
-		if star.name != "Central_Black_Hole":
-			print("Star: ", star.name)
+	var path = get_parent().get_node("StarPath_Arm").curve.get_baked_points()
+	for i in range(path.size()):
+		var stars_in_range = get_stars_in_range(path[i])
+		for star in stars_in_range:
 			var max_paths = get_max_paths(star.star_type)
-			print("MAx paths: ", max_paths)
-			for i in range(max_paths):
-				var other_star = choose_other_star(star)
-				if other_star == null:
-					break
-				add_path_between(star,other_star)
+			var nearby_stars = get_nearby_stars(star,stars_in_range)
+			for j in range(min(max_paths, nearby_stars.size())):
+				var other_star = nearby_stars[j]
+				if not path_exists_between(star, other_star):
+					add_path_between(star, other_star, scale_factor)
+					
+func get_stars_in_range(position):
+	var stars_in_range = []
+	for star in get_tree().get_nodes_in_group("stars"):
+		if star.global_position.distance_to(position) <= MAX_DISTANCE:
+			stars_in_range.append(star)
+	return stars_in_range
+	
+func get_nearby_stars(star, stars_in_range):
+	var nearby_stars = stars_in_range.duplicate(true)
+	nearby_stars.erase(star)
+	
+	var comparator = StarComparator.new(star)
+	nearby_stars.sort_custom(Callable(comparator, "compare"))
+	
+	return nearby_stars
+	
+func path_exists_between(star1, star2):
+	for path in star1.get_node("StarPaths").get_children():
+		if path.points[1] == star2.global_position:
+			return true
+	return false
 
-func create_path(star, max_paths):
-	var current_paths = 0
-	while current_paths < max_paths:
-		var other_star = choose_other_star(star)
-		if other_star == null: # if there are no stars to connect
-			break
-		if len(other_star.get_node("StarPaths").get_children()) < get_max_paths(other_star.star_type):
-			add_path_between(star,other_star)
-			current_paths +=1
-			
-func choose_other_star(star):
-	var other_stars = get_tree().get_nodes_in_group("stars").duplicate(true)
-	other_stars.erase(star)
-	
-	for path in star.get_node("StarPaths").get_children():
-		if path.points[1] in other_stars:
-			other_stars.erase(path.points[1])
-	if other_stars.is_empty():
-		return null
-	else:
-		var comparator = StarComparator.new(star)
-		other_stars.sort_custom(Callable(comparator, "compare"))
-		return other_stars[0]
-		
-	
+
 func get_max_paths(star_type):
 	match star_type:
 		"BlackHole":
@@ -69,19 +80,21 @@ func get_max_paths(star_type):
 	
 	return 0
 	
-func add_path_between(star1, star2):
+func add_path_between(star1, star2,scale_factor):
 	#add a check for existing paths
 	print("attempting to add a path between ", star1.name, " + ", star2.name)
 	for path in star1.get_node("StarPaths").get_children():
-		if path.points[1] == star2.global_position:
+		if path.points[1] == star2.global_position * scale_factor:
 			print("Path already exists, returning...")
 			return 
 	
+	print("Star1 Position: ", star1.global_position * scale_factor)
+	print("Star2 Position: ", star2.global_position * scale_factor)
 	
 	var line = Line2D.new()
 	line.default_color = Color(randf_range(0,1),randf_range(0,1), 1)
-	line.width = 2
-	line.points = [star1.global_position, star2.global_position]
+	line.width = 5
+	line.points = [star1.global_position * scale_factor, star2.global_position * scale_factor]
 	
 	#add the lines as a child to the StarPaths nodes of both stars
 	star1.get_node("StarPaths").add_child(line)
