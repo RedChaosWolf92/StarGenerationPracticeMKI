@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://cp1yguno5w5wk"]
+
+[ext_resource type="Script" path="res://Galaxy/Stars/Yellow_Star.gd" id="1_jo433"]
+[ext_resource type="Texture2D" uid="uid://bprrrrbxepbmu" path="res://Sprites/Stellar Bodies/13.png" id="2_j1h6t"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_fr7jw"]
+radius = 65.0
+
+[node name="Yellow_Star" type="StaticBody2D"]
+script = ExtResource("1_jo433")
+
+[node name="Yellow_Star" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_j1h6t")
+
+[node name="YellowstarRadius" type="CollisionShape2D" parent="."]
+position = Vector2(-24, -15)
+shape = SubResource("CircleShape2D_fr7jw")
+
+[node name="StarPaths" type="Node2D" parent="."]

@@ -1,0 +1,45 @@
+[gd_scene load_steps=10 format=3 uid="uid://cqa1fwkf4bqkp"]
+
+[ext_resource type="Script" path="res://Galaxy/Stars/StarTemplates.gd" id="1_cd2s0"]
+[ext_resource type="PackedScene" uid="uid://q3yxvr25bnlp" path="res://Galaxy/Stars/BlackHole.tscn" id="1_yyy81"]
+[ext_resource type="PackedScene" uid="uid://dc6qe0n3bhgex" path="res://Galaxy/Stars/Blue_Giant.tscn" id="2_nd55q"]
+[ext_resource type="PackedScene" uid="uid://cesmeek15wyp3" path="res://Galaxy/Stars/Neutron.tscn" id="3_26n52"]
+[ext_resource type="PackedScene" uid="uid://6rbgi036idnj" path="res://Galaxy/Stars/ProtoStar.tscn" id="4_wqt1f"]
+[ext_resource type="PackedScene" uid="uid://bxwvmwslxpy3o" path="res://Galaxy/Stars/Red_Dwarf.tscn" id="5_1v4nk"]
+[ext_resource type="PackedScene" uid="uid://bdy4t1x81bm26" path="res://Galaxy/Stars/Red_Giant.tscn" id="6_t3ald"]
+[ext_resource type="PackedScene" uid="uid://onec2wxdygg3" path="res://Galaxy/Stars/White_Dwarf.tscn" id="7_d1mfb"]
+[ext_resource type="PackedScene" uid="uid://cp1yguno5w5wk" path="res://Galaxy/Stars/Yellow_Star.tscn" id="8_52p5s"]
+
+[node name="StarTemplates" type="Node2D"]
+script = ExtResource("1_cd2s0")
+
+[node name="BlackHole" parent="." instance=ExtResource("1_yyy81")]
+visible = false
+
+[node name="Blue_Giant" parent="." instance=ExtResource("2_nd55q")]
+visible = false
+position = Vector2(471, 387)
+
+[node name="Neutron" parent="." instance=ExtResource("3_26n52")]
+visible = false
+position = Vector2(777, 246)
+
+[node name="ProtoStar" parent="." instance=ExtResource("4_wqt1f")]
+visible = false
+position = Vector2(1182, 240)
+
+[node name="Red_Dwarf" parent="." instance=ExtResource("5_1v4nk")]
+visible = false
+position = Vector2(1751, 331)
+
+[node name="Red_Giant" parent="." instance=ExtResource("6_t3ald")]
+visible = false
+position = Vector2(1071, 690)
+
+[node name="White_Dwarf" parent="." instance=ExtResource("7_d1mfb")]
+visible = false
+position = Vector2(362, 839)
+
+[node name="Yellow_Star" parent="." instance=ExtResource("8_52p5s")]
+visible = false
+position = Vector2(1097, 1086)

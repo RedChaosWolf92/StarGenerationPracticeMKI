@@ -1,0 +1,17 @@
+[gd_scene load_steps=5 format=3 uid="uid://d087evu7cy27e"]
+
+[ext_resource type="Script" path="res://Galaxy/Stars/stars.gd" id="1_6td8j"]
+[ext_resource type="PackedScene" uid="uid://cqa1fwkf4bqkp" path="res://Galaxy/Stars/StarTemplates.tscn" id="3_ad6hc"]
+[ext_resource type="Script" path="res://Galaxy/Stars/StarPath_Arm.gd" id="3_mjdkr"]
+
+[sub_resource type="Curve2D" id="Curve2D_r6uuy"]
+
+[node name="Stars" type="Node2D"]
+script = ExtResource("1_6td8j")
+
+[node name="StarTemplates" parent="." instance=ExtResource("3_ad6hc")]
+script = null
+
+[node name="StarPath_Arm" type="Path2D" parent="."]
+curve = SubResource("Curve2D_r6uuy")
+script = ExtResource("3_mjdkr")

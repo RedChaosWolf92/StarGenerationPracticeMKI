@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://cesmeek15wyp3"]
+
+[ext_resource type="Texture2D" uid="uid://bgvgodw0tiedd" path="res://Sprites/Stellar Bodies/07_01.png" id="1_d0tgs"]
+[ext_resource type="Script" path="res://Galaxy/Stars/Neutron.gd" id="1_qmyai"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5tcc0"]
+radius = 100.0
+
+[node name="Neutron" type="StaticBody2D"]
+script = ExtResource("1_qmyai")
+
+[node name="Neutron" type="Sprite2D" parent="."]
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("1_d0tgs")
+
+[node name="NeutronRadius" type="CollisionShape2D" parent="."]
+position = Vector2(-13, -7)
+shape = SubResource("CircleShape2D_5tcc0")
+
+[node name="StarPaths" type="Node2D" parent="."]
