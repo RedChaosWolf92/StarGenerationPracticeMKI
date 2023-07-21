@@ -1,0 +1,28 @@
+[gd_scene load_steps=7 format=3 uid="uid://57e6446pwi58"]
+
+[ext_resource type="Script" path="res://Galaxy/galaxy1.gd" id="1_tpf8r"]
+[ext_resource type="Script" path="res://Galaxy/Practice.gd" id="2_x8ccr"]
+[ext_resource type="Script" path="res://Galaxy/Center_Black_Hole.gd" id="3_8n7u5"]
+[ext_resource type="Texture2D" uid="uid://dinde56q7rx57" path="res://Sprites/Stellar Bodies/12_01.png" id="4_j0ne8"]
+[ext_resource type="PackedScene" uid="uid://dvw8ygvynfi0u" path="res://Galaxy/star_paths.tscn" id="5_ox8oi"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5busn"]
+radius = 260.0
+
+[node name="Galaxy" type="Node2D"]
+script = ExtResource("1_tpf8r")
+
+[node name="Practice" type="Camera2D" parent="."]
+script = ExtResource("2_x8ccr")
+
+[node name="Center_Black_Hole" type="StaticBody2D" parent="."]
+script = ExtResource("3_8n7u5")
+
+[node name="Black_Hole" type="Sprite2D" parent="Center_Black_Hole"]
+texture = ExtResource("4_j0ne8")
+
+[node name="BHRadius" type="CollisionShape2D" parent="Center_Black_Hole"]
+position = Vector2(-49, -28)
+shape = SubResource("CircleShape2D_5busn")
+
+[node name="starPaths" parent="." instance=ExtResource("5_ox8oi")]
